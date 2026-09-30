@@ -31,12 +31,12 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     role = Column(
-        Enum("admin", "trainer", "trainee"),
+        Enum("admin", "trainer", "trainee", name="user_role_enum"),
         nullable=False
     )
 
     status = Column(
-        Enum("active", "inactive"),
+        Enum("active", "inactive", name="user_status_enum"),
         nullable=False,
         default="active"
     )
@@ -68,6 +68,16 @@ class Course(Base):
 
     seats = Column(Integer, nullable=False)
 
+    minimum_participants = Column(
+        Integer,
+        nullable=True
+    )
+
+    maximum_participants = Column(
+        Integer,
+        nullable=True
+    )
+
     target_audience = Column(Text, nullable=False)
     prerequisites = Column(Text, nullable=True)
     registration_conditions = Column(Text, nullable=True)
@@ -79,7 +89,7 @@ class Course(Base):
     )
 
     status = Column(
-        Enum("draft", "published", "archived"),
+       Enum("draft", "published", "archived", name="course_status_enum"),
         nullable=False,
         default="draft"
     )
@@ -101,7 +111,24 @@ class Course(Base):
             "impact_wait_days >= 0",
             name="check_impact_wait_days_non_negative"
         ),
+        CheckConstraint(
+            "minimum_participants IS NULL OR minimum_participants > 0",
+            name="check_minimum_participants_positive"
+        ),
+        CheckConstraint(
+            "maximum_participants IS NULL OR maximum_participants > 0",
+            name="check_maximum_participants_positive"
+        ),
+        CheckConstraint(
+            """
+            minimum_participants IS NULL
+            OR maximum_participants IS NULL
+            OR minimum_participants <= maximum_participants
+            """,
+            name="check_participant_limits"
+        ),
     )
+
 
 
 # =========================================================
@@ -123,7 +150,7 @@ class CourseContent(Base):
     description = Column(Text, nullable=True)
 
     type = Column(
-        Enum("video", "material", "file", "link"),
+        Enum("video", "material", "file", "link", name="content_type_enum"),
         nullable=False
     )
 
@@ -139,7 +166,7 @@ class CourseContent(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "order > 0",
+            '"order" > 0',
             name="check_content_order_positive"
         ),
         UniqueConstraint(
@@ -223,7 +250,7 @@ class Enrollment(Base):
     )
 
     status = Column(
-        Enum("pending", "approved", "rejected"),
+        Enum("pending", "approved", "rejected", name="enrollment_status_enum"),
         nullable=False,
         default="pending"
     )
@@ -270,7 +297,7 @@ class Attendance(Base):
     )
 
     attendance_status = Column(
-        Enum("present", "absent"),
+       Enum("present", "absent", name="attendance_status_enum"),
         nullable=False
     )
 
@@ -381,7 +408,7 @@ class EvaluationQuestion(Base):
     )
 
     question_type = Column(
-        Enum("rating", "text"),
+       Enum("rating", "text", name="evaluation_question_type_enum"),
         nullable=False
     )
 
@@ -392,7 +419,7 @@ class EvaluationQuestion(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "order > 0",
+            '"order" > 0',
             name="check_evaluation_question_order_positive"
         ),
         UniqueConstraint(
@@ -528,7 +555,7 @@ class ImpactQuestion(Base):
     )
 
     question_type = Column(
-        Enum("rating", "text"),
+      Enum("rating", "text", name="impact_question_type_enum"),
         nullable=False
     )
 
@@ -539,7 +566,7 @@ class ImpactQuestion(Base):
 
     __table_args__ = (
         CheckConstraint(
-            "order > 0",
+            '"order" > 0',
             name="check_impact_question_order_positive"
         ),
         UniqueConstraint(
@@ -653,7 +680,7 @@ class Certificate(Base):
     )
 
     status = Column(
-        Enum("issued", "revoked"),
+        Enum("issued", "revoked", name="certificate_status_enum"),
         nullable=False,
         default="issued"
     )
@@ -703,7 +730,8 @@ class Notification(Base):
             "session_reminder",
             "evaluation",
             "impact",
-            "certificate"
+            "certificate",
+            name="notification_type_enum"
         ),
         nullable=False
     )
