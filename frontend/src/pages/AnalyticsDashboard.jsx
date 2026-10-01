@@ -1,40 +1,70 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getCourseAnalyticsDashboard } from '../services/api'
+import {
+  getAdminCourses,
+  getCourseAnalyticsDashboard,
+} from '../services/api'
 import '../App.css'
 import './AnalyticsDashboard.css'
 
 
 function AnalyticsDashboard() {
-  const [analytics, setAnalytics] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  const testCourseId = 3
+const [analytics, setAnalytics] = useState(null)
+const [courses, setCourses] = useState([])
+const [selectedCourseId, setSelectedCourseId] = useState('')
+const [loading, setLoading] = useState(true)
+const [error, setError] = useState('')
 
 
   useEffect(() => {
-    async function loadAnalytics() {
-      try {
-        setLoading(true)
-        setError('')
+  async function loadCourses() {
+    try {
+      setLoading(true)
+      setError('')
 
-        const data = await getCourseAnalyticsDashboard(
-          testCourseId,
-        )
+      const data = await getAdminCourses()
 
-        setAnalytics(data)
-      } catch (err) {
-        setError(
-          err.message || 'تعذر تحميل مؤشرات الدورة',
-        )
-      } finally {
-        setLoading(false)
+      setCourses(data)
+
+      if (data.length > 0) {
+        setSelectedCourseId(data[0].id)
       }
+    } catch (err) {
+      setError(
+        err.message || 'تعذر تحميل الدورات',
+      )
+    } finally {
+      setLoading(false)
     }
+  }
 
-    loadAnalytics()
-  }, [])
+  loadCourses()
+}, [])
+
+useEffect(() => {
+  if (!selectedCourseId) return
+
+  async function loadAnalytics() {
+    try {
+      setLoading(true)
+      setError('')
+
+      const data = await getCourseAnalyticsDashboard(
+        selectedCourseId,
+      )
+
+      setAnalytics(data)
+    } catch (err) {
+      setError(
+        err.message || 'تعذر تحميل مؤشرات الدورة',
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  loadAnalytics()
+}, [selectedCourseId])
 
 
   const registeredTrainees =
@@ -171,13 +201,21 @@ function AnalyticsDashboard() {
 
                 <select
                   className="analytics-course-select"
-                  value={testCourseId}
-                  disabled
-                  readOnly
+                  value={selectedCourseId}
+                  onChange={(event) =>
+                    setSelectedCourseId(
+                      Number(event.target.value),
+                    )
+                  }
                 >
-                  <option value={testCourseId}>
-                    {courseName}
-                  </option>
+                  {courses.map((course) => (
+                    <option
+                      key={course.id}
+                      value={course.id}
+                    >
+                      {course.name}
+                    </option>
+                  ))}
                 </select>
 
               </div>

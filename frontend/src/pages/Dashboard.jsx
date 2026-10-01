@@ -269,6 +269,7 @@ function Dashboard() {
               <button
                 type="button"
                 className="nav-item"
+                onClick={() => navigate('/admin/analytics')}
               >
                 <span className="nav-icon">▥</span>
                 <span>التقارير والمؤشرات</span>
