@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 from app import models
-from app.routers import analytics, auth, courses, enrollments
+from app.routers import analytics, attendance, auth, courses, enrollments, sessions
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,6 +26,8 @@ app.include_router(analytics.router)
 app.include_router(auth.router)
 app.include_router(courses.router)
 app.include_router(enrollments.router)
+app.include_router(sessions.router)
+app.include_router(attendance.router)
 
 
 @app.get("/")

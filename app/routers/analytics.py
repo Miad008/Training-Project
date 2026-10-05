@@ -175,7 +175,11 @@ def get_seat_occupancy(
     )
 
     minimum_participants = course.minimum_participants
-    maximum_participants = course.maximum_participants
+    maximum_participants = (
+    course.maximum_participants
+    if course.maximum_participants is not None
+    else course.seats
+    )
 
     # Check whether the minimum number of participants
     # has been reached.
@@ -596,7 +600,11 @@ def get_course_dashboard(
     # Capacity
     # -----------------------------------------------------
 
-    maximum_participants = course.maximum_participants
+    maximum_participants = (
+    course.maximum_participants
+    if course.maximum_participants is not None
+    else course.seats
+    )
 
     if maximum_participants is None:
         capacity_type = "unlimited"

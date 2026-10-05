@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts'
+import {
   getAdminCourses,
   getCourseAnalyticsDashboard,
 } from '../services/api'
@@ -75,6 +82,18 @@ useEffect(() => {
 
   const absenceRate =
     analytics?.attendance?.absence_rate ?? 0
+
+    const attendanceChartData = [
+  { name: 'الحضور', value: attendanceRate },
+  { name: 'الغياب', value: absenceRate },
+
+]
+  const attendanceColor =
+    attendanceRate >= 80
+      ? '#22c55e'
+      : attendanceRate >= 60
+        ? '#f59e0b'
+        : '#ef4444'
 
   const evaluationAverage =
     analytics?.evaluation?.average ?? 0
@@ -304,13 +323,35 @@ useEffect(() => {
                 </div>
 
                 <div className="analytics-empty-chart">
-                  <strong>
-                    {attendanceRate}%
-                  </strong>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <PieChart>
+                     <Pie
+                        data={attendanceChartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={90}
+                        startAngle={90}
+                        endAngle={-270}
+                        stroke="none"
+                      >
+                        {attendanceChartData.map((entry, index) => (
+                          <Cell
+                            key={entry.name}
+                            fill={
+                              index === 0
+                                ? attendanceColor
+                                : '#e5e7eb'
+                            }
+                          />
+                        ))}
+                      </Pie>
 
-                  <span>
-                    نسبة الحضور
-                  </span>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
 
                 <div className="analytics-stat-row">

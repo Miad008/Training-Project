@@ -543,7 +543,7 @@ function Header() {
 
       <nav className="program-details-nav">
 
-        <Link to="/">
+        <Link to="/trainee">
           الرئيسية
         </Link>
 

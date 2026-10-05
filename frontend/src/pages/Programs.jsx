@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Programs.css'
-import { getCourses } from '../services/api'
-
+import { getCourses, getStoredUser } from '../services/api'
 
 function Programs() {
   const [programs, setPrograms] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+    const user = getStoredUser()
+
+  const homePath =
+    user?.role === 'admin'
+      ? '/admin'
+      : user?.role === 'trainee'
+        ? '/trainee'
+        : '/'
 
 
   useEffect(() => {
@@ -64,7 +71,7 @@ function Programs() {
 
 
         <Link
-          to="/"
+          to={homePath}
           className="programs-home-link"
         >
           الرئيسية
