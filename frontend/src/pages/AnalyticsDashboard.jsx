@@ -56,11 +56,13 @@ useEffect(() => {
       setLoading(true)
       setError('')
 
-      const data = await getCourseAnalyticsDashboard(
-        selectedCourseId,
-      )
+  const data = await getCourseAnalyticsDashboard(
+  selectedCourseId,
+  )
 
-      setAnalytics(data)
+   setAnalytics(data)
+
+
     } catch (err) {
       setError(
         err.message || 'تعذر تحميل مؤشرات الدورة',
@@ -373,7 +375,6 @@ useEffect(() => {
                 </div>
 
               </div>
-
 
               <div className="analytics-card">
 
